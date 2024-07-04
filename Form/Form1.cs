@@ -178,24 +178,27 @@ namespace HeyaoChecker
             foreach (ListViewItem ls in listView1.Items)
             {
                 string data = "wxappAid=3086825&wxappId=101&itemId=103&contentList=%5B%7B%22key%22%3A%22v2%22%2C%22value%22%3A%22" + ls.SubItems[5].Text + "%22%7D%5D";
-                string result_data = webRequest.post("https://i.qz.fkw.com/appAjax/wxAppConnectionQuery.jsp?cmd=search", data).Replace("\r\n", "");
+                string result_data = webRequest.post("https://i.qz.fkw.com/appAjax/wxAppConnectionQuery.jsp?cmd=search", data);
                 if (result_data == null) { continue; }
-
-                JObject jobj = JObject.Parse(result_data);
-                JToken jtoken = jobj["queryDataList"][0]["content"];
-                if ( ls.SubItems[3].Text.Length > 1 && !ls.SubItems[3].Text.Equals(jtoken["v5"].ToString(), StringComparison.OrdinalIgnoreCase) )
+                try
                 {
-                    Log(string.Format("批次{0} {4}的头壳有记录更新辣! 状态 {1}=>{2}, {3}", jtoken["v0"].ToString(), ls.SubItems[2].Text, jtoken["v3"].ToString(), jtoken["v4"].ToString(), jtoken["v1"].ToString()));
+                    JObject jobj = JObject.Parse(result_data.Replace("\r\n", ""));
+                    JToken jtoken = jobj["queryDataList"][0]["content"];
+                    if (ls.SubItems[3].Text.Length > 1 && !ls.SubItems[3].Text.Equals(jtoken["v5"].ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        Log(string.Format("批次{0} {4}的头壳有记录更新辣! 状态 {1}=>{2}, {3}", jtoken["v0"].ToString(), ls.SubItems[2].Text, jtoken["v3"].ToString(), jtoken["v4"].ToString(), jtoken["v1"].ToString()));
 
-                    string notify_data = string.Format("title=头壳{0} {2}辣!&desp=## {4}的头壳记录更新辣!\n***\n- 批次: {0}\n- 状态: {1} => {2}\n- 时间: {5}\n- 信息: {3}", jtoken["v0"].ToString(), ls.SubItems[2].Text, jtoken["v3"].ToString(), jtoken["v4"].ToString(), jtoken["v1"].ToString(), DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                    webRequest.post("https://sctapi.ftqq.com/" + ls.SubItems[6].Text + ".send", notify_data);
-                    
+                        string notify_data = string.Format("title=头壳{0} {2}辣!&desp=## {4}的头壳记录更新辣!\n***\n- 批次: {0}\n- 状态: {1} => {2}\n- 时间: {5}\n- 信息: {3}", jtoken["v0"].ToString(), ls.SubItems[2].Text, jtoken["v3"].ToString(), jtoken["v4"].ToString(), jtoken["v1"].ToString(), DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                        webRequest.post("https://sctapi.ftqq.com/" + ls.SubItems[6].Text + ".send", notify_data);
+
+                    }
+                    ls.Text = jtoken["v0"].ToString();
+                    ls.SubItems[1].Text = jtoken["v1"].ToString();
+                    ls.SubItems[2].Text = jtoken["v3"].ToString();
+                    ls.SubItems[3].Text = jtoken["v5"].ToString();
+                    ls.SubItems[4].Text = jtoken["v4"].ToString();
                 }
-                ls.Text = jtoken["v0"].ToString();
-                ls.SubItems[1].Text = jtoken["v1"].ToString();
-                ls.SubItems[2].Text = jtoken["v3"].ToString();
-                ls.SubItems[3].Text = jtoken["v5"].ToString();
-                ls.SubItems[4].Text = jtoken["v4"].ToString();
+                catch { }
             }
         }
 
