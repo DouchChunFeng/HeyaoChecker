@@ -3,10 +3,11 @@ import os
 import time
 import requests
 
+GLOBAL_SAVED_DATA = {}
 #例子: {'订单编号': 'Server酱通知的key(可为空)'}
 QUERYID_AND_NOTIFYID = {'': ''}
 #轮询时间
-TIMER_SLEEP = 1
+TIMER_SLEEP = 5
 
 def main_handler(event, context):
     if TIMER_SLEEP < 1:
@@ -46,7 +47,7 @@ def data_do(display, info):
     verfiy_data(log_dict)
         
 def verfiy_data(data):
-    last_data = get_temp()
+    last_data = get_temp(data["订单编号"])
     if last_data:
         if data["数据更新时间"] != last_data["数据更新时间"]:
             save_temp(data)
@@ -68,19 +69,26 @@ def format_time():
     return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     
 def save_temp(info_data):
-    info_file = 'last_info.txt'
-    with open(info_file, 'w') as f:
-        json.dump(info_data, f)
-        
-def get_temp():
-    info_file = 'last_info.txt'
-    if os.path.exists(info_file):
-        with open(info_file, 'r') as f:
-            try:
-                return json.load(f)
-            except Exception as e:
-                return None
-    return None
+    #info_file = 'last_info.txt'
+    #with open(info_file, 'w') as f:
+    #    json.dump(info_data, f)
+	global GLOBAL_SAVED_DATA
+	GLOBAL_SAVED_DATA[info_data["订单编号"]] = info_data
+	
+
+def get_temp(QueryID):
+    #info_file = 'last_info.txt'
+    #if os.path.exists(info_file):
+    #    with open(info_file, 'r') as f:
+    #        try:
+    #            return json.load(f)
+    #        except Exception as e:
+    #            return None
+    #return None
+	if QueryID in GLOBAL_SAVED_DATA:
+		return GLOBAL_SAVED_DATA[QueryID]
+	return None
+    
     
 if __name__ == '__main__':
     main_handler(None, None)

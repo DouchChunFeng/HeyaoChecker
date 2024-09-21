@@ -1,6 +1,7 @@
-<p align="center"><img src="https://raw.githubusercontent.com/DouchChunFeng/HeyaoChecker/main/README_form.png" width="400" alt="图片预览"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/DouchChunFeng/HeyaoChecker/main/README_form.png" width="397" alt="图片预览"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/DouchChunFeng/HeyaoChecker/main/README_python.png" width="489" alt="图片预览"></p>
 
-# 河妖工坊进度通知器
+# 河妖工房进度通知器
 - [功能](#gn)
 - [用法](#yf)
 - [依赖](#yl)
